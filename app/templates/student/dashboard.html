@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3 class="mb-4"><i class="bi bi-speedometer2"></i> {{ t('student_dashboard') }}</h3>
+
+<div class="row g-4">
+    <div class="col-md-7">
+        <div class="card mb-4">
+            <div class="card-header bg-white"><i class="bi bi-journal-bookmark"></i> {{ t('my_courses') }}</div>
+            <div class="card-body">
+                {% if courses %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>{{ t('course_code') }}</th>
+                                <th>{{ t('course_title') }}</th>
+                                <th>{{ t('actions') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for course in courses %}
+                            <tr>
+                                <td><span class="badge bg-secondary">{{ course.code }}</span></td>
+                                <td>{{ course.title }}</td>
+                                <td>
+                                    <a href="{{ url_for('student.course_detail', course_id=course.id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i> {{ t('view') }}
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">{{ t('no_data') }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-white"><i class="bi bi-plus-circle"></i> {{ t('enroll_with_code') }}</div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('student.enroll') }}" class="d-flex gap-2" novalidate>
+                    {{ enroll_form.hidden_tag() }}
+                    {{ enroll_form.code(class="form-control", placeholder=t('course_code')) }}
+                    {{ enroll_form.submit(class="btn btn-primary text-nowrap") }}
+                </form>
+
+                {% if available_courses %}
+                <hr>
+                <p class="small text-muted mb-2">{{ t('available_courses') }}</p>
+                <ul class="list-group list-group-flush">
+                    {% for course in available_courses %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>{{ course.title }} <span class="badge bg-light text-dark">{{ course.code }}</span></span>
+                        <span class="text-muted small">{{ course.teacher.full_name }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header bg-white"><i class="bi bi-file-earmark-check"></i> {{ t('upcoming_assignments') }}</div>
+            <div class="card-body">
+                {% if upcoming_assignments %}
+                <ul class="list-group list-group-flush">
+                    {% for assignment in upcoming_assignments %}
+                    <li class="list-group-item">
+                        <strong>{{ assignment.title }}</strong>
+                        <div class="small text-muted">
+                            {{ t('due_date') }}:
+                            {{ assignment.due_date.strftime('%Y-%m-%d %H:%M') if assignment.due_date else '-' }}
+                        </div>
+                        <a href="{{ url_for('student.submit_assignment', assignment_id=assignment.id) }}" class="small">
+                            {{ t('submit_assignment') }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted mb-0">{{ t('no_data') }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

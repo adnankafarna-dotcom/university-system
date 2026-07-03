@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card p-4">
+            <h4 class="mb-4"><i class="bi bi-file-earmark-check"></i> {{ t('add_assignment') }} - {{ course.title }}</h4>
+            <form method="POST" enctype="multipart/form-data" novalidate>
+                {{ form.hidden_tag() }}
+
+                <div class="mb-3">
+                    <label class="form-label">{{ t('assignment_title') }}</label>
+                    {{ form.title(class="form-control") }}
+                    {% for error in form.title.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">{{ t('assignment_description') }}</label>
+                    {{ form.description(class="form-control", rows="4") }}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">{{ t('due_date') }}</label>
+                        {{ form.due_date(class="form-control", type="datetime-local") }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">{{ t('max_grade') }}</label>
+                        {{ form.max_grade(class="form-control") }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">{{ t('attachment_file') }}</label>
+                    {{ form.file(class="form-control") }}
+                    {% for error in form.file.errors %}<div class="text-danger small">{{ t(error) }}</div>{% endfor %}
+                </div>
+
+                <div class="d-flex gap-2">
+                    {{ form.submit(class="btn btn-primary") }}
+                    <a href="{{ url_for('teacher.course_detail', course_id=course.id) }}" class="btn btn-outline-secondary">{{ t('cancel') }}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

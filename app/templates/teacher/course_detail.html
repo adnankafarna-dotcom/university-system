@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+        <h3>{{ course.title }} <span class="badge bg-secondary">{{ course.code }}</span></h3>
+        <p class="text-muted mb-0">{{ course.description }}</p>
+    </div>
+    <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-outline-secondary">{{ t('back') }}</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-camera-video"></i> {{ t('lectures') }}</span>
+                <a href="{{ url_for('teacher.new_lecture', course_id=course.id) }}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-plus"></i> {{ t('add_lecture') }}
+                </a>
+            </div>
+            <div class="card-body">
+                {% if course.lectures %}
+                <ul class="list-group list-group-flush">
+                    {% for lecture in course.lectures %}
+                    <li class="list-group-item">
+                        <strong>{{ lecture.title }}</strong>
+                        <div class="small text-muted">{{ lecture.created_at.strftime('%Y-%m-%d') }}</div>
+                        {% if lecture.file_path %}
+                        <a href="{{ url_for('static', filename=lecture.file_path) }}" class="small" target="_blank">
+                            <i class="bi bi-download"></i> {{ t('download') }}
+                        </a>
+                        {% endif %}
+                        {% if lecture.video_url %}
+                        <a href="{{ lecture.video_url }}" class="small ms-2" target="_blank">
+                            <i class="bi bi-play-circle"></i> Video
+                        </a>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted mb-0">{{ t('no_data') }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-file-earmark-check"></i> {{ t('assignments') }}</span>
+                <a href="{{ url_for('teacher.new_assignment', course_id=course.id) }}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-plus"></i> {{ t('add_assignment') }}
+                </a>
+            </div>
+            <div class="card-body">
+                {% if course.assignments %}
+                <ul class="list-group list-group-flush">
+                    {% for assignment in course.assignments %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ assignment.title }}</strong>
+                            <div class="small text-muted">
+                                {{ t('due_date') }}:
+                                {{ assignment.due_date.strftime('%Y-%m-%d %H:%M') if assignment.due_date else '-' }}
+                            </div>
+                        </div>
+                        <a href="{{ url_for('teacher.view_submissions', assignment_id=assignment.id) }}" class="btn btn-sm btn-outline-primary">
+                            {{ t('view_submissions') }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted mb-0">{{ t('no_data') }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header bg-white"><i class="bi bi-people"></i> {{ t('enrolled_students') }}</div>
+    <div class="card-body">
+        {% if course.enrollments %}
+        <ul class="list-group list-group-flush">
+            {% for enrollment in course.enrollments %}
+            <li class="list-group-item">{{ enrollment.student.full_name }} ({{ enrollment.student.username }})</li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-muted mb-0">{{ t('no_data') }}</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

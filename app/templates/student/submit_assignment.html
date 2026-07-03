@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card p-4">
+            <h4 class="mb-1"><i class="bi bi-upload"></i> {{ t('submit_assignment') }}</h4>
+            <p class="text-muted mb-4">{{ assignment.title }} — {{ course.title }}</p>
+
+            {% if assignment.description %}
+            <div class="mb-3 p-3 bg-light rounded small">{{ assignment.description }}</div>
+            {% endif %}
+
+            {% if existing_submission %}
+            <div class="alert alert-info">
+                <strong>{{ t('my_submission') }}:</strong>
+                {{ t('submitted_at') }} {{ existing_submission.submitted_at.strftime('%Y-%m-%d %H:%M') }}
+                {% if existing_submission.is_graded() %}
+                <br>{{ t('grade') }}: {{ existing_submission.grade }} / {{ assignment.max_grade }}
+                {% if existing_submission.feedback %}<br>{{ t('feedback') }}: {{ existing_submission.feedback }}{% endif %}
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <form method="POST" enctype="multipart/form-data" novalidate>
+                {{ form.hidden_tag() }}
+
+                <div class="mb-3">
+                    <label class="form-label">{{ t('submission_text') }}</label>
+                    {{ form.text_answer(class="form-control", rows="5") }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">{{ t('submission_file') }}</label>
+                    {{ form.file(class="form-control") }}
+                    {% for error in form.file.errors %}<div class="text-danger small">{{ t(error) }}</div>{% endfor %}
+                </div>
+
+                <div class="d-flex gap-2">
+                    {{ form.submit(class="btn btn-primary") }}
+                    <a href="{{ url_for('student.course_detail', course_id=course.id) }}" class="btn btn-outline-secondary">{{ t('cancel') }}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
